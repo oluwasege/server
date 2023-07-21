@@ -6,6 +6,10 @@ const userSchema = require("../models/User");
 const authorize = require("../middlewares/auth");
 const { validationResult } = require("express-validator");
 const cors = require("cors");
+const { error } = require("console");
+const salt = bcrypt.genSaltSync(10);
+const mongoose=require('mongoose');
+
 // CORS OPTIONS
 var whitelist = ["http://localhost:4200", "http://localhost:4000"];
 var corsOptionsDelegate = function (req, callback) {
@@ -20,11 +24,15 @@ var corsOptionsDelegate = function (req, callback) {
   }
   callback(null, corsOptions);
 };
+
 // Sign-up
 router.post("/register-user", (req, res, next) => {
   const err = validationResult(req);
   if (err.isEmpty()) {
-    bcrypt.hash(req.body.password, 20).then((hash) => {
+    bcrypt.hash(req.body.password, salt).then((hash) => {
+      if (error) {
+        console.log(err);
+      }
       const user = new userSchema({
         name: req.body.name,
         email: req.body.email,
@@ -48,6 +56,7 @@ router.post("/register-user", (req, res, next) => {
     return res.status(422).jsonp(errors.array());
   }
 });
+
 // Sign-in
 router.post("/signin", (req, res, next) => {
   let getUser;
@@ -93,6 +102,7 @@ router.post("/signin", (req, res, next) => {
       });
     });
 });
+
 // Get Users
 router.route("/", cors(corsOptionsDelegate)).get(async (req, res, next) => {
   await userSchema
@@ -105,10 +115,12 @@ router.route("/", cors(corsOptionsDelegate)).get(async (req, res, next) => {
       return next(err);
     });
 });
+
 // Get Single User
 router.route("/user-profile/:id").get(authorize, async (req, res, next) => {
+  console.log(req.body.id);
   await userSchema
-    .findById(req.params.id, req.body)
+    .findById(req.body.id)
     .then((result) => {
       res.json({
         data: result,
@@ -120,6 +132,7 @@ router.route("/user-profile/:id").get(authorize, async (req, res, next) => {
       return next(err);
     });
 });
+
 // Update User
 router.route("/update-user/:id").put(async (req, res, next) => {
   await userSchema
@@ -136,6 +149,7 @@ router.route("/update-user/:id").put(async (req, res, next) => {
       console.log(err);
     });
 });
+
 // Delete User
 router.route("/delete-user/:id").delete(async (req, res, next) => {
   await userSchema
@@ -149,4 +163,5 @@ router.route("/delete-user/:id").delete(async (req, res, next) => {
       console.log(err);
     });
 });
+
 module.exports = router;

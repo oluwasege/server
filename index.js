@@ -3,7 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 // Express APIs
-const api = require("./routes/auth.routes");
+const api = require("./Routes/auth.routes");
 // Connecting MongoDB
 async function mongoDbConnection() {
   await mongoose.connect(
