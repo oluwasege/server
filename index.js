@@ -7,7 +7,7 @@ const uri = "mongodb+srv://Oluwasegun:nvidia@cluster0.jgruyhl.mongodb.net/?retry
 
 
 // Express APIs
-const api = require("./Routes/auth.routes");
+const api = require("./routes/auth.routes");
 // Connecting MongoDB
 /*
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
